@@ -15,6 +15,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 public class AuthService {
 
@@ -39,9 +43,15 @@ public class AuthService {
 
         org.springframework.security.core.userdetails.User userDetails = 
                 (org.springframework.security.core.userdetails.User) authentication.getPrincipal();
-        String role = userDetails.getAuthorities().iterator().next().getAuthority();
 
-        return new JwtResponse(jwt, userDetails.getUsername(), role);
+        User user = userRepository.findByEmail(userDetails.getUsername())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        List<String> roles = userDetails.getAuthorities().stream()
+                .map(item -> item.getAuthority())
+                .collect(Collectors.toList());
+
+        return new JwtResponse(jwt, user.getId(), user.getEmail(), roles);
     }
 
     public void registerUser(SignupRequest signupRequest) {
@@ -51,11 +61,7 @@ public class AuthService {
 
         Role role = Role.ROLE_VIEWER;
         if (signupRequest.getRole() != null) {
-            try {
-                role = Role.valueOf("ROLE_" + signupRequest.getRole().toUpperCase());
-            } catch (IllegalArgumentException e) {
-                // Keep default
-            }
+            role = signupRequest.getRole();
         }
 
         User user = User.builder()

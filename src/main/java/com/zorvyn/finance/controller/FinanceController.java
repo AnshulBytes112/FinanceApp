@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -46,7 +47,7 @@ public class FinanceController {
             @RequestParam(required = false) BigDecimal maxAmount,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
-            @PageableDefault(size = 10, sort = "date") Pageable pageable) {
+            @ParameterObject @PageableDefault(size = 10, sort = "date") Pageable pageable) {
         
         Page<TransactionDTO> transactions = financeService.getFilteredTransactions(
                 category, type, minAmount, maxAmount, startDate, endDate, pageable);
