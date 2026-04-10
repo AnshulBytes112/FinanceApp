@@ -29,6 +29,9 @@ ENV PORT=8080
 ENV DB_URL=jdbc:postgresql://localhost:5432/financedb
 ENV DB_USERNAME=postgres
 ENV DB_PASSWORD=your_password
+ENV SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:5432/financedb
+ENV SPRING_DATASOURCE_USERNAME=postgres
+ENV SPRING_DATASOURCE_PASSWORD=your_password
 ENV JWT_SECRET=super_secret_key_that_is_at_least_256_bits_long_for_security_reasons
 ENV JWT_EXPIRATION=86400000
 
