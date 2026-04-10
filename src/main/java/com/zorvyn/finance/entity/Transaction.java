@@ -9,6 +9,7 @@ import java.time.LocalDate;
 
 @Entity
 @Table(name = "transactions")
+@EntityListeners(TransactionAuditListener.class)
 @Getter
 @Setter
 @NoArgsConstructor
