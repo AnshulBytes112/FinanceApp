@@ -36,3 +36,6 @@ build/
 *.sql
 *.temp
 .DS_Store
+
+# Secrets
+src/main/resources/application.properties

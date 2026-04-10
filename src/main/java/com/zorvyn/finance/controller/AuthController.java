@@ -1,6 +1,5 @@
 package com.zorvyn.finance.controller;
 
-import com.zorvyn.finance.dto.JwtResponse;
 import com.zorvyn.finance.dto.LoginRequest;
 import com.zorvyn.finance.dto.SignupRequest;
 import com.zorvyn.finance.service.AuthService;

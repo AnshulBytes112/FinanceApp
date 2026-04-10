@@ -2,7 +2,6 @@ package com.zorvyn.finance.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import java.util.Set;
 
 @Entity
 @Table(name = "users")
@@ -26,6 +25,7 @@ public class User {
     @Column(nullable = false)
     private Role role;
 
+    @Builder.Default
     @Column(nullable = false)
     private boolean active = true;
 }
