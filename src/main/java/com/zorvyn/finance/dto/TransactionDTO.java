@@ -8,6 +8,7 @@ import lombok.Data;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
 public class TransactionDTO {
@@ -27,4 +28,7 @@ public class TransactionDTO {
     private LocalDate date;
 
     private String notes;
+
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 }

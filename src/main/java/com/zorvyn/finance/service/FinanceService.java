@@ -6,18 +6,22 @@ import com.zorvyn.finance.entity.Transaction;
 import com.zorvyn.finance.entity.TransactionType;
 import com.zorvyn.finance.entity.User;
 import com.zorvyn.finance.repository.TransactionRepository;
+import com.zorvyn.finance.repository.TransactionSpecification;
 import com.zorvyn.finance.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Service
 public class FinanceService {
@@ -55,11 +59,19 @@ public class FinanceService {
         return mapToDTO(saved);
     }
 
-    public List<TransactionDTO> getAllTransactions() {
+    public Page<TransactionDTO> getFilteredTransactions(
+            String category, TransactionType type, BigDecimal minAmount, BigDecimal maxAmount,
+            LocalDate startDate, LocalDate endDate, Pageable pageable) {
+        
         User user = getCurrentUser();
-        return transactionRepository.findByUser(user).stream()
-                .map(this::mapToDTO)
-                .collect(Collectors.toList());
+        Specification<Transaction> spec = Specification.where(TransactionSpecification.hasUser(user))
+                .and(TransactionSpecification.hasCategory(category))
+                .and(TransactionSpecification.hasType(type))
+                .and(TransactionSpecification.amountGreaterThan(minAmount))
+                .and(TransactionSpecification.amountLessThan(maxAmount))
+                .and(TransactionSpecification.dateBetween(startDate, endDate));
+
+        return transactionRepository.findAll(spec, pageable).map(this::mapToDTO);
     }
 
     @Transactional
@@ -91,6 +103,7 @@ public class FinanceService {
             throw new RuntimeException("Unauthorized to delete this transaction");
         }
 
+        // Hibernate @SQLDelete will handle the soft delete
         transactionRepository.delete(transaction);
     }
 
@@ -124,6 +137,8 @@ public class FinanceService {
         dto.setCategory(t.getCategory());
         dto.setDate(t.getDate());
         dto.setNotes(t.getNotes());
+        dto.setCreatedAt(t.getCreatedAt());
+        dto.setUpdatedAt(t.getUpdatedAt());
         return dto;
     }
 }

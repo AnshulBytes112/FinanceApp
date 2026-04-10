@@ -1,5 +1,7 @@
 package com.zorvyn.finance.controller;
 
+import com.zorvyn.finance.dto.ApiResponse;
+import com.zorvyn.finance.dto.JwtResponse;
 import com.zorvyn.finance.dto.LoginRequest;
 import com.zorvyn.finance.dto.SignupRequest;
 import com.zorvyn.finance.service.AuthService;
@@ -16,13 +18,14 @@ public class AuthController {
     private AuthService authService;
 
     @PostMapping("/signin")
-    public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
-        return ResponseEntity.ok(authService.authenticateUser(loginRequest));
+    public ResponseEntity<ApiResponse<JwtResponse>> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
+        JwtResponse response = authService.authenticateUser(loginRequest);
+        return ResponseEntity.ok(ApiResponse.success(response, "User authenticated successfully"));
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signupRequest) {
+    public ResponseEntity<ApiResponse<String>> registerUser(@Valid @RequestBody SignupRequest signupRequest) {
         authService.registerUser(signupRequest);
-        return ResponseEntity.ok("User registered successfully!");
+        return ResponseEntity.ok(ApiResponse.success("User registered successfully!", "Registration successful"));
     }
 }
