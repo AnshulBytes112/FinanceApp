@@ -1,19 +1,14 @@
 # Stage 1: Build the application
-FROM eclipse-temurin:17-jdk-alpine AS builder
+FROM maven:3.9.6-eclipse-temurin-17-alpine AS builder
 
 WORKDIR /app
 
 # Copy the pom.xml and source code
 COPY pom.xml .
-COPY .mvn .mvn
-COPY mvnw .
 COPY src ./src
 
-# Grant execution rights to the maven wrapper
-RUN chmod +x ./mvnw
-
-# Package the application (skip tests for faster deployment, but ideally run them in CI)
-RUN ./mvnw clean package -DskipTests
+# Package the application
+RUN mvn clean package -DskipTests
 
 # Stage 2: Run the application
 FROM eclipse-temurin:17-jre-alpine
