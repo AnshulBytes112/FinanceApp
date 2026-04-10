@@ -1,10 +1,13 @@
 package com.zorvyn.finance.service;
 
+import com.zorvyn.finance.dto.BudgetStatusDTO;
 import com.zorvyn.finance.dto.DashboardSummary;
 import com.zorvyn.finance.dto.TransactionDTO;
+import com.zorvyn.finance.entity.CategoryBudget;
 import com.zorvyn.finance.entity.Transaction;
 import com.zorvyn.finance.entity.TransactionType;
 import com.zorvyn.finance.entity.User;
+import com.zorvyn.finance.repository.CategoryBudgetRepository;
 import com.zorvyn.finance.repository.TransactionRepository;
 import com.zorvyn.finance.repository.TransactionSpecification;
 import com.zorvyn.finance.repository.UserRepository;
@@ -19,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +32,9 @@ public class FinanceService {
 
     @Autowired
     private TransactionRepository transactionRepository;
+
+    @Autowired
+    private CategoryBudgetRepository categoryBudgetRepository;
 
     @Autowired
     private UserRepository userRepository;
@@ -122,11 +129,25 @@ public class FinanceService {
             categoryTotals.put((String) map.get("category"), (BigDecimal) map.get("total"));
         }
 
+        // Budget alerting logic
+        List<CategoryBudget> budgets = categoryBudgetRepository.findByUser(user);
+        List<BudgetStatusDTO> budgetStatusList = new ArrayList<>();
+        for (CategoryBudget budget : budgets) {
+            BigDecimal actual = categoryTotals.getOrDefault(budget.getCategoryName(), BigDecimal.ZERO);
+            budgetStatusList.add(BudgetStatusDTO.builder()
+                    .category(budget.getCategoryName())
+                    .budgetAmount(budget.getBudgetAmount())
+                    .actualAmount(actual)
+                    .overBudget(actual.compareTo(budget.getBudgetAmount()) > 0)
+                    .build());
+        }
+
         return DashboardSummary.builder()
                 .totalIncome(income)
                 .totalExpenses(expenses)
                 .netBalance(income.subtract(expenses))
                 .categoryWiseTotals(categoryTotals)
+                .budgetStatus(budgetStatusList)
                 .build();
     }
 
