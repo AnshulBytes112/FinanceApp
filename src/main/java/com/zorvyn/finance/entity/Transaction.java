@@ -43,4 +43,7 @@ public class Transaction extends Auditable {
 
     @Builder.Default
     private boolean deleted = false;
+
+    @Version
+    private Long version;
 }

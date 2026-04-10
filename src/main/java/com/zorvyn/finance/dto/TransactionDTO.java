@@ -31,4 +31,5 @@ public class TransactionDTO {
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private Long version;
 }

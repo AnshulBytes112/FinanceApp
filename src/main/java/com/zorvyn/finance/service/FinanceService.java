@@ -89,6 +89,7 @@ public class FinanceService {
         transaction.setCategory(dto.getCategory());
         transaction.setDate(dto.getDate());
         transaction.setNotes(dto.getNotes());
+        transaction.setVersion(dto.getVersion());
 
         return mapToDTO(transactionRepository.save(transaction));
     }
@@ -139,6 +140,7 @@ public class FinanceService {
         dto.setNotes(t.getNotes());
         dto.setCreatedAt(t.getCreatedAt());
         dto.setUpdatedAt(t.getUpdatedAt());
+        dto.setVersion(t.getVersion());
         return dto;
     }
 }

@@ -2,6 +2,7 @@ package com.zorvyn.finance.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.validation.FieldError;
@@ -34,6 +35,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<String> handleBadCredentialsException(BadCredentialsException ex) {
         return new ResponseEntity<>("Invalid email or password.", HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(ObjectOptimisticLockingFailureException.class)
+    public ResponseEntity<String> handleOptimisticLockingFailureException(ObjectOptimisticLockingFailureException ex) {
+        return new ResponseEntity<>("Conflict Detected: The record has been modified by another user. Please refresh and try again.", HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler(RuntimeException.class)
